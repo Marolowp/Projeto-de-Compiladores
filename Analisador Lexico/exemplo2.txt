@@ -1,0 +1,19 @@
+main {
+	var int n;
+	var int resultado;
+	n := 5;
+	resultado := fatorial(n);
+	print(resultado);
+}
+
+function int fatorial(int x) {
+	var int acumulador;
+	var int contador;
+	acumulador := 1;
+	contador := 1;
+	while ((contador < x)) do {
+		acumulador := (acumulador * contador);
+		contador := (contador + 1);
+	};
+	return acumulador;
+}

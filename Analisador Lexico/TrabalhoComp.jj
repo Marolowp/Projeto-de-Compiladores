@@ -1,0 +1,115 @@
+PARSER_BEGIN(TrabalhoComp)
+import java.io.*;
+public class TrabalhoComp {
+
+  public static void main(String args[]) throws ParseException,IOException {
+    TrabalhoComp analisadorLexico = new TrabalhoComp(new FileInputStream(args[0]));
+    analisadorLexico.TrabalhoComp();
+  }
+
+}
+
+PARSER_END(TrabalhoComp)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+/* palavras reservadas */
+TOKEN :
+{
+  <MAIN: "main">
+| <VAR: "var">
+| <INT: "int">
+| <BOOL: "bool">
+| <IF: "if">
+| <WHILE: "while">
+| <DO: "do">
+| <RETURN: "return">
+| <PRINT: "print">
+| <FUNCTION: "function">
+| <TRUE: "true">
+| <FALSE: "false">
+}
+
+/* simbolos */
+TOKEN :
+{
+  <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APARENTESES: "(">
+| <FPARENTESES: ")">
+| <PTVIRGULA: ";">
+| <VIRGULA: ",">
+| <ATRIBUICAO: ":=">
+}
+
+/* operadores */
+TOKEN :
+{
+  <SOMA: "+">
+| <SUB: "-">
+| <MULT: "*">
+| <DIV: "/">
+| <AND: "&&">
+| <OR: "||">
+| <MENOR: "<">
+| <MAIOR: ">">
+| <IGUAL: "==">
+}
+
+/* identificadores e numeros */
+TOKEN :
+{
+  <NUM: <DIGITOS> (<FRACAO>)? (<EXPOENTE>)?>
+| <ID: <LETRA> (<LETRAOUDIGITO>)* (<FINALSUBLINHADO>)*>
+| <#LETRA: ["a"-"z","A"-"Z"]>
+| <#DIGITO: ["0"-"9"]>
+| <#DIGITOS: (<DIGITO>)+>
+| <#LETRAOUDIGITO: <LETRA> | <DIGITO>>
+| <#FRACAO: "." <DIGITOS>>
+| <#EXPOENTE: "E" (["+","-"])? <DIGITOS>>
+| <#FINALSUBLINHADO: "_" (<LETRAOUDIGITO>)+>
+}
+
+void TrabalhoComp () :
+{Token t;}
+{
+(
+  <MAIN> { System.out.println("Palavra reservada: main");}
+| <VAR> { System.out.println("Palavra reservada: var");}
+| <INT> { System.out.println("Palavra reservada: int");}
+| <BOOL> { System.out.println("Palavra reservada: bool");}
+| <IF> { System.out.println("Palavra reservada: if");}
+| <WHILE> { System.out.println("Palavra reservada: while");}
+| <DO> { System.out.println("Palavra reservada: do");}
+| <RETURN> { System.out.println("Palavra reservada: return");}
+| <PRINT> { System.out.println("Palavra reservada: print");}
+| <TRUE> { System.out.println("Palavra reservada: true");}
+| <FALSE> { System.out.println("Palavra reservada: false");}
+| <FUNCTION> { System.out.println("Palavra reservada: function");}
+| <ACHAVES> { System.out.println("Abre chaves: {");}
+| <FCHAVES> { System.out.println("Fecha chaves: }");}
+| <APARENTESES> { System.out.println("Abre parênteses: (");}
+| <FPARENTESES> { System.out.println("Fecha parênteses: )");}
+| <PTVIRGULA> { System.out.println("Ponto e vírgula: ;");}
+| <VIRGULA> { System.out.println("Vírgula: ,");}
+| <ATRIBUICAO> { System.out.println("Atribuição: :=");}
+| t=<SOMA> { System.out.println("Operador: "+ t.image);}
+| t=<SUB> { System.out.println("Operador: "+ t.image);}
+| t=<MULT> { System.out.println("Operador: "+ t.image);}
+| t=<DIV> { System.out.println("Operador: "+ t.image);}
+| t=<AND> { System.out.println("Operador: "+ t.image);}
+| t=<OR> { System.out.println("Operador: "+ t.image);}
+| t=<MENOR> { System.out.println("Operador: "+ t.image);}
+| t=<MAIOR> { System.out.println("Operador: "+ t.image);}
+| t=<IGUAL> { System.out.println("Operador: "+ t.image);}
+| t=<NUM> { System.out.println("Número: "+ t.image);}
+| t=<ID> { System.out.println("Identificador: "+ t.image);}
+)*
+<EOF> 
+}
