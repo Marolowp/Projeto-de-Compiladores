@@ -1,9 +1,17 @@
 main {
-  var int contador;
-  contador := 0;
-  
-  while (contador < 5) do {
-    print(contador);
-    contador := contador + 1;
-  };
+    var int x;
+    var int y;
+
+    x := 10;
+    y := 20;
+
+    if ((x < y)) {
+        print(x);
+    };
+
+    while ((x < 15)) do {
+        x := (x + 1);
+    };
+
+    print(x);
 }

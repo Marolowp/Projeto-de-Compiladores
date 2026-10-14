@@ -2,10 +2,26 @@ PARSER_BEGIN(TrabalhoComp)
 import java.io.*;
 public class TrabalhoComp {
 
-  public static void main(String args[]) throws ParseException,IOException {
-    TrabalhoComp analisadorLexico = new TrabalhoComp(new FileInputStream(args[0]));
-    analisadorLexico.TrabalhoComp();
-  }
+  public static void main(String args[])
+            throws ParseException, IOException {
+
+        if (args.length == 0) {
+            System.out.println(
+                "Informe o arquivo de entrada."
+            );
+            return;
+        }
+
+        TrabalhoComp analisador = new TrabalhoComp(
+            new FileInputStream(args[0])
+        );
+
+        analisador.TrabalhoComp();
+
+        System.out.println(
+            "Programa sintaticamente correto!"
+        );
+    }
 
 }
 
@@ -76,40 +92,199 @@ TOKEN :
 | <#FINALSUBLINHADO: "_" (<LETRAOUDIGITO>)+>
 }
 
-void TrabalhoComp () :
-{Token t;}
+// LUGOSI -> MAIN FUNC?
+// A regra recursiva de FUNC é representada por repetição.
+
+void TrabalhoComp() :
+{}
 {
-(
-  <MAIN> { System.out.println("Palavra reservada: main");}
-| <VAR> { System.out.println("Palavra reservada: var");}
-| <INT> { System.out.println("Palavra reservada: int");}
-| <BOOL> { System.out.println("Palavra reservada: bool");}
-| <IF> { System.out.println("Palavra reservada: if");}
-| <WHILE> { System.out.println("Palavra reservada: while");}
-| <DO> { System.out.println("Palavra reservada: do");}
-| <RETURN> { System.out.println("Palavra reservada: return");}
-| <PRINT> { System.out.println("Palavra reservada: print");}
-| <TRUE> { System.out.println("Palavra reservada: true");}
-| <FALSE> { System.out.println("Palavra reservada: false");}
-| <FUNCTION> { System.out.println("Palavra reservada: function");}
-| <ACHAVES> { System.out.println("Abre chaves: {");}
-| <FCHAVES> { System.out.println("Fecha chaves: }");}
-| <APARENTESES> { System.out.println("Abre parênteses: (");}
-| <FPARENTESES> { System.out.println("Fecha parênteses: )");}
-| <PTVIRGULA> { System.out.println("Ponto e vírgula: ;");}
-| <VIRGULA> { System.out.println("Vírgula: ,");}
-| <ATRIBUICAO> { System.out.println("Atribuição: :=");}
-| t=<SOMA> { System.out.println("Operador: "+ t.image);}
-| t=<SUB> { System.out.println("Operador: "+ t.image);}
-| t=<MULT> { System.out.println("Operador: "+ t.image);}
-| t=<DIV> { System.out.println("Operador: "+ t.image);}
-| t=<AND> { System.out.println("Operador: "+ t.image);}
-| t=<OR> { System.out.println("Operador: "+ t.image);}
-| t=<MENOR> { System.out.println("Operador: "+ t.image);}
-| t=<MAIOR> { System.out.println("Operador: "+ t.image);}
-| t=<IGUAL> { System.out.println("Operador: "+ t.image);}
-| t=<NUM> { System.out.println("Número: "+ t.image);}
-| t=<ID> { System.out.println("Identificador: "+ t.image);}
-)*
-<EOF> 
+    Main()
+    ( Funcao() )*
+    <EOF>
+}
+
+void Main() :
+{}
+{
+    <MAIN>
+    <ACHAVES>
+    Declaracoes()
+    Comandos()
+    <FCHAVES>
+}
+
+void Declaracoes() :
+{}
+{
+    (
+        <VAR>
+        Tipo()
+        <ID>
+        <PTVIRGULA>
+    )*
+}
+
+void Tipo() :
+{}
+{
+    <INT>
+  | <BOOL>
+}
+
+void Comandos() :
+{}
+{
+    ( Comando() )*
+}
+
+void Comando() :
+{}
+{
+    LOOKAHEAD(2)
+    <ID>
+    <ATRIBUICAO>
+    Expressao()
+    <PTVIRGULA>
+
+  |
+    LOOKAHEAD(2)
+    <ID>
+    <APARENTESES>
+    ListaExpressaoOpcional()
+    <FPARENTESES>
+    <PTVIRGULA>
+
+  |
+    <IF>
+    <APARENTESES>
+    Expressao()
+    <FPARENTESES>
+    <ACHAVES>
+    Comandos()
+    <FCHAVES>
+    <PTVIRGULA>
+
+  |
+    <WHILE>
+    <APARENTESES>
+    Expressao()
+    <FPARENTESES>
+    <DO>
+    <ACHAVES>
+    Comandos()
+    <FCHAVES>
+    <PTVIRGULA>
+
+  |
+    <DO>
+    <ACHAVES>
+    Comandos()
+    <FCHAVES>
+    <WHILE>
+    <APARENTESES>
+    Expressao()
+    <FPARENTESES>
+    <PTVIRGULA>
+
+  |
+    <RETURN>
+    Expressao()
+    <PTVIRGULA>
+
+  |
+    <PRINT>
+    <APARENTESES>
+    Expressao()
+    <FPARENTESES>
+    <PTVIRGULA>
+}
+
+void Expressao() :
+{}
+{
+      <APARENTESES>
+      Expressao()
+      Operador()
+      Expressao()
+      <FPARENTESES>
+
+    | Fator()
+}
+
+void Operador() :
+{}
+{
+      <SOMA>
+    | <SUB>
+    | <MULT>
+    | <DIV>
+    | <AND>
+    | <OR>
+    | <MENOR>
+    | <MAIOR>
+    | <IGUAL>
+}
+
+void Fator() :
+{}
+{
+      LOOKAHEAD(2)
+      <ID>
+      <APARENTESES>
+      ListaExpressaoOpcional()
+      <FPARENTESES>
+
+    | <ID>
+    | <NUM>
+    | <TRUE>
+    | <FALSE>
+}
+
+void ListaExpressaoOpcional() :
+{}
+{
+    [ ListaExpressao() ]
+}
+
+void ListaExpressao() :
+{}
+{
+    Expressao()
+    (
+        <VIRGULA>
+        Expressao()
+    )*
+}
+
+void Funcao() :
+{}
+{
+    <FUNCTION>
+    Tipo()
+    <ID>
+    <APARENTESES>
+    ListaArgumentosOpcional()
+    <FPARENTESES>
+    <ACHAVES>
+    Declaracoes()
+    Comandos()
+    <FCHAVES>
+}
+
+void ListaArgumentosOpcional() :
+{}
+{
+    [ ListaArgumentos() ]
+}
+
+void ListaArgumentos() :
+{}
+{
+    Tipo()
+    <ID>
+    (
+        <VIRGULA>
+        Tipo()
+        <ID>
+    )*
 }
