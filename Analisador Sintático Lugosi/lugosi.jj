@@ -1,0 +1,212 @@
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(Lugosi)
+import java.io.*;
+
+public class Lugosi {
+
+  public static void main(String args[]) throws IOException {
+    if (args.length < 1) {
+      System.err.println("Uso: java Lugosi <arquivo.lugosi> [-tokens]");
+      return;
+    }
+
+    Lugosi parser = new Lugosi(new FileInputStream(args[0]));
+
+    try {
+      parser.Lugosi();
+    } catch (ParseException e) {
+      System.err.println("Erro sintatico: " + e.getMessage());
+      return;
+    } catch (TokenMgrError e) {
+      System.err.println("Erro lexico: " + e.getMessage());
+      return;
+    }
+
+    System.out.println("Programa sintaticamente correto!");
+
+    if (args.length > 1 && args[1].equals("-tokens")) {
+      SimpleCharStream cs =
+          new SimpleCharStream(new FileInputStream(args[0]));
+
+      LugosiTokenManager tm = new LugosiTokenManager(cs);
+
+      for (Token t = tm.getNextToken();
+           t.kind != EOF;
+           t = tm.getNextToken()) {
+
+        System.out.println(
+            t.image + "  ->  " + tokenImage[t.kind]
+        );
+      }
+    }
+  }
+}
+
+PARSER_END(Lugosi)
+
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+/* palavras reservadas */
+TOKEN :
+{
+  <MAIN: "main">
+| <VAR: "var">
+| <INT: "int">
+| <BOOL: "bool">
+| <IF: "if">
+| <WHILE: "while">
+| <DO: "do">
+| <RETURN: "return">
+| <PRINT: "print">
+| <FUNCTION: "function">
+| <TRUE: "true">
+| <FALSE: "false">
+}
+
+/* simbolos */
+TOKEN :
+{
+  <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APARENTESES: "(">
+| <FPARENTESES: ")">
+| <PTVIRGULA: ";">
+| <VIRGULA: ",">
+| <ATRIBUICAO: ":=">
+}
+
+/* operadores */
+TOKEN :
+{
+  <SOMA: "+">
+| <SUB: "-">
+| <MULT: "*">
+| <DIV: "/">
+| <AND: "&&">
+| <OR: "||">
+| <MENOR: "<">
+| <MAIOR: ">">
+| <IGUAL: "==">
+}
+
+/* identificadores e numeros */
+TOKEN :
+{
+  <NUM: <DIGITOS> (<FRACAO>)? (<EXPOENTE>)?>
+| <ID: <LETRA> (<LETRAOUDIGITO>)* (<FINALSUBLINHADO>)*>
+| <#LETRA: ["a"-"z","A"-"Z"]>
+| <#DIGITO: ["0"-"9"]>
+| <#DIGITOS: (<DIGITO>)+>
+| <#LETRAOUDIGITO: <LETRA> | <DIGITO>>
+| <#FRACAO: "." <DIGITOS>>
+| <#EXPOENTE: "E" (["+","-"])? <DIGITOS>>
+| <#FINALSUBLINHADO: "_" (<LETRAOUDIGITO>)+>
+}
+
+/* Analisador sintatico 
+ * LUGOSI -> MAIN FUNC?
+ * FUNC era recursiva a esquerda: FUNC -> FUNC "function" ... | "function" ...
+ * Vira: ( "function" ... )+   (aqui usado como (...)* por causa do "?")
+ */
+void Lugosi() :
+{}
+{
+  Main() ( Func() )* <EOF>
+}
+
+/* MAIN -> "main" "{" VARDECL SEQCOMANDOS "}" */
+void Main() :
+{}
+{
+  <MAIN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
+
+/* VARDECL -> VARDECL "var" TIPO id ";" | vazio   (recursao a esquerda -> iteracao) */
+void VarDecl() :
+{}
+{
+  ( <VAR> Tipo() <ID> <PTVIRGULA> )*
+}
+
+/* TIPO -> "int" | "bool" */
+void Tipo() :
+{}
+{
+  <INT> | <BOOL>
+}
+
+/* SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio   (recursao a esquerda -> iteracao) */
+void SeqComandos() :
+{}
+{
+  ( Comando() )*
+}
+
+/* COMANDO: as duas alternativas iniciadas por id foram fatoradas */
+void Comando() :
+{}
+{
+  <ID> ( <ATRIBUICAO> Exp() | <APARENTESES> ( ListaExp() )? <FPARENTESES> ) <PTVIRGULA>
+| <IF>  Exp()  <ACHAVES> SeqComandos() <FCHAVES> <PTVIRGULA>
+| <WHILE> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <PTVIRGULA>
+| <DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENTESES> Exp() <FPARENTESES> <PTVIRGULA>
+| <RETURN> Exp() <PTVIRGULA>
+| <PRINT> <APARENTESES> Exp() <FPARENTESES> <PTVIRGULA>
+}
+
+/* EXP -> "(" EXP OP EXP ")" | FATOR */
+void Exp() :
+{}
+{
+  <APARENTESES> Exp() Op() Exp() <FPARENTESES>
+| Fator()
+}
+
+/* FATOR: as duas alternativas iniciadas por id foram fatoradas */
+void Fator() :
+{}
+{
+  <ID> ( <APARENTESES> ( ListaExp() )? <FPARENTESES> )?
+| <NUM>
+| <TRUE>
+| <FALSE>
+}
+
+/* OP -> "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==" */
+void Op() :
+{}
+{
+  <SOMA> | <SUB> | <MULT> | <DIV> | <AND> | <OR> | <MENOR> | <MAIOR> | <IGUAL>
+}
+
+/* LISTAEXP -> EXP | LISTAEXP "," EXP */
+void ListaExp() :
+{}
+{
+  Exp() ( <VIRGULA> Exp() )*
+}
+
+/* FUNC -> FUNC "function" ... | "function" ...  (uma funcao por chamada; o laco fica em Lugosi) */
+void Func() :
+{}
+{
+  <FUNCTION> Tipo() <ID> <APARENTESES> ( ListaArg() )? <FPARENTESES>
+  <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
+
+/* LISTAARG -> TIPO id | LISTAARG "," TIPO id */
+void ListaArg() :
+{}
+{
+  Tipo() <ID> ( <VIRGULA> Tipo() <ID> )*
+}

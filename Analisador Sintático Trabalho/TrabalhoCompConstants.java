@@ -19,69 +19,71 @@ public interface TrabalhoCompConstants {
   /** RegularExpression Id. */
   int IF = 9;
   /** RegularExpression Id. */
-  int WHILE = 10;
+  int ELSE = 10;
   /** RegularExpression Id. */
-  int DO = 11;
+  int WHILE = 11;
   /** RegularExpression Id. */
-  int RETURN = 12;
+  int DO = 12;
   /** RegularExpression Id. */
-  int PRINT = 13;
+  int RETURN = 13;
   /** RegularExpression Id. */
-  int FUNCTION = 14;
+  int PRINT = 14;
   /** RegularExpression Id. */
-  int TRUE = 15;
+  int FUNCTION = 15;
   /** RegularExpression Id. */
-  int FALSE = 16;
+  int TRUE = 16;
   /** RegularExpression Id. */
-  int ACHAVES = 17;
+  int FALSE = 17;
   /** RegularExpression Id. */
-  int FCHAVES = 18;
+  int ACHAVES = 18;
   /** RegularExpression Id. */
-  int APARENTESES = 19;
+  int FCHAVES = 19;
   /** RegularExpression Id. */
-  int FPARENTESES = 20;
+  int APARENTESES = 20;
   /** RegularExpression Id. */
-  int PTVIRGULA = 21;
+  int FPARENTESES = 21;
   /** RegularExpression Id. */
-  int VIRGULA = 22;
+  int PTVIRGULA = 22;
   /** RegularExpression Id. */
-  int ATRIBUICAO = 23;
+  int VIRGULA = 23;
   /** RegularExpression Id. */
-  int SOMA = 24;
+  int ATRIBUICAO = 24;
   /** RegularExpression Id. */
-  int SUB = 25;
+  int SOMA = 25;
   /** RegularExpression Id. */
-  int MULT = 26;
+  int SUB = 26;
   /** RegularExpression Id. */
-  int DIV = 27;
+  int MULT = 27;
   /** RegularExpression Id. */
-  int AND = 28;
+  int DIV = 28;
   /** RegularExpression Id. */
-  int OR = 29;
+  int AND = 29;
   /** RegularExpression Id. */
-  int MENOR = 30;
+  int OR = 30;
   /** RegularExpression Id. */
-  int MAIOR = 31;
+  int MENOR = 31;
   /** RegularExpression Id. */
-  int IGUAL = 32;
+  int MAIOR = 32;
   /** RegularExpression Id. */
-  int NUM = 33;
+  int IGUAL = 33;
   /** RegularExpression Id. */
-  int ID = 34;
+  int NUM = 34;
   /** RegularExpression Id. */
-  int LETRA = 35;
+  int ID = 35;
   /** RegularExpression Id. */
-  int DIGITO = 36;
+  int LETRA = 36;
   /** RegularExpression Id. */
-  int DIGITOS = 37;
+  int DIGITO = 37;
   /** RegularExpression Id. */
-  int LETRAOUDIGITO = 38;
+  int DIGITOS = 38;
   /** RegularExpression Id. */
-  int FRACAO = 39;
+  int LETRAOUDIGITO = 39;
   /** RegularExpression Id. */
-  int EXPOENTE = 40;
+  int FRACAO = 40;
   /** RegularExpression Id. */
-  int FINALSUBLINHADO = 41;
+  int EXPOENTE = 41;
+  /** RegularExpression Id. */
+  int FINALSUBLINHADO = 42;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -98,6 +100,7 @@ public interface TrabalhoCompConstants {
     "\"int\"",
     "\"bool\"",
     "\"if\"",
+    "\"else\"",
     "\"while\"",
     "\"do\"",
     "\"return\"",
